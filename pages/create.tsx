@@ -1,52 +1,61 @@
-import React, { useState } from 'react'
-import Layout from '../components/Layout'
-import Router from 'next/router'
+import React, { useRef, useState } from 'react';
+import Layout from '../components/Layout';
+import Router from 'next/router';
+import { postSchema } from '../schema/post';
 
 const Draft: React.FC = () => {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [authorEmail, setAuthorEmail] = useState('')
+  const title = useRef<string>();
+  const authorEmail = useRef<string>();
+  const content = useRef<string>();
 
+  // const [authorEmail, setAuthorEmail] = useState('test');
   const submitData = async (e: React.SyntheticEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const body = { title, content, authorEmail }
+      const body = {
+        title: title.current,
+        content: content.current,
+        authorEmail: authorEmail.current,
+      };
+      const response = postSchema.safeParse(body);
+      if (!response.success) {
+        return;
+      }
       await fetch(`http://localhost:3000/api/post`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      })
-      await Router.push('/drafts')
+      });
+      await Router.push('/drafts');
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return (
     <Layout>
       <div>
-        <form
-          onSubmit={submitData}>
+        <form onSubmit={submitData}>
           <h1>Create Draft</h1>
           <input
             autoFocus
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => (title.current = e.target.value)}
             placeholder="Title"
             type="text"
-            value={title}
+            value={title.current}
           />
           <input
-            onChange={e => setAuthorEmail(e.target.value)}
+            onChange={(e) => (authorEmail.current = e.target.value)}
             placeholder="Author (email address)"
             type="text"
-            value={authorEmail}
+            value={authorEmail.current}
           />
           <textarea
             cols={50}
-            onChange={e => setContent(e.target.value)}
+            onChange={(e) => (content.current = e.target.value)}
             placeholder="Content"
             rows={8}
-            value={content}
+            value={content.current}
           />
           <input
             disabled={!content || !title || !authorEmail}
@@ -88,7 +97,7 @@ const Draft: React.FC = () => {
         }
       `}</style>
     </Layout>
-  )
-}
+  );
+};
 
 export default Draft;

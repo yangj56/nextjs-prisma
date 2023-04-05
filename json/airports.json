@@ -1,0 +1,27 @@
+[
+  {
+    "country": "singapore",
+    "code": "sg",
+    "airports": [
+      "Singapore (SIN)"
+    ]
+  },
+  {
+    "country": "taiwan",
+    "code": "tw",
+    "airports": [
+      "Taipei (TAIWAN)",
+      "Khaosiung (TAIWAN)",
+      "Taichung (TAIWAN)"
+    ]
+  },
+  {
+    "country": "japan",
+    "code": "jp",
+    "airports": [
+      "Sapporo (JAPAN)",
+      "Osaka (JAPAN)",
+      "Tokyo (JAPAN)"
+    ]
+  }
+]

@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { Country } from '../pages/airport';
+import useSWR from 'swr';
 import _ from 'lodash';
-
-type Props = {
-  countries: Country[];
-};
+import { getAirportAPI } from '../fetch';
 
 enum FlightType {
   ONE_WAY = 'oneway',
@@ -19,7 +16,7 @@ enum RouteTab {
 
 const DEBOUNCE_TIME = 300;
 
-const Form: React.FC<Props> = ({ countries }) => {
+const Form: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<RouteTab>(RouteTab.ROUTE);
   const [flightType, setFlightType] = useState<FlightType>(FlightType.ONE_WAY);
 
@@ -30,6 +27,8 @@ const Form: React.FC<Props> = ({ countries }) => {
   const [endValue, setEndValue] = useState<string>('');
   const [showStart, setShowStart] = useState(false);
   const [showEnd, setShowEnd] = useState(false);
+
+  const { data } = useSWR('s3/airport', getAirportAPI);
 
   const getStartAirportDisplay = () => {
     return filteredStart.map((airport) => {
@@ -66,7 +65,7 @@ const Form: React.FC<Props> = ({ countries }) => {
   const filteredStartDisplay = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const fileredList: string[] = [];
-    countries.forEach((country) => {
+    data?.forEach((country) => {
       const airports = country.airports.filter((airport) =>
         airport.toLowerCase().includes(input.toLocaleLowerCase())
       );
@@ -78,7 +77,7 @@ const Form: React.FC<Props> = ({ countries }) => {
   const filteredEndDisplay = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const fileredList: string[] = [];
-    countries.forEach((country) => {
+    data?.forEach((country) => {
       const airports = country.airports.filter((airport) =>
         airport.toLowerCase().includes(input.toLocaleLowerCase())
       );

@@ -1,6 +1,8 @@
 import { NextPage } from 'next';
+import { SWRConfig } from 'swr';
 import Form from '../components/Form';
 import Layout from '../components/Layout';
+import { getAirportAPI } from '../fetch';
 
 export type Country = {
   code: string;
@@ -9,24 +11,31 @@ export type Country = {
 };
 
 type Props = {
-  countries: Country[];
+  fallback: {
+    countries: Country[];
+  };
 };
 
-const Airport: NextPage<Props> = ({ countries }) => {
+const Airport: NextPage<Props> = ({ fallback }) => {
   return (
-    <Layout>
-      <Form countries={countries} />
-    </Layout>
+    <SWRConfig value={{ fallback }}>
+      <Layout>
+        <Form />
+      </Layout>
+    </SWRConfig>
   );
 };
 
 export default Airport;
 
 export async function getStaticProps() {
-  const airportJSON = await fetch(`${process.env.JSON_URL}`);
-  const countries = await airportJSON.json();
+  const countries = await getAirportAPI();
 
   return {
-    props: { countries },
+    props: {
+      fallback: {
+        's3/airport': countries,
+      },
+    },
   };
 }
